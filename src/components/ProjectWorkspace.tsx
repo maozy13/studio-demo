@@ -50,8 +50,8 @@ interface MoveFormValues {
 }
 
 const containerLabels: Record<ContainerType, string> = {
-  system: '系统',
-  module: '模块',
+  system: '应用',
+  module: '页面',
   function: '功能',
 }
 
@@ -145,7 +145,7 @@ export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceP
   const handleCreateFunctionForSelected = () => {
     // Require a module selection to ensure correct hierarchy.
     if (!selectedNode || selectedNode.type !== 'module') {
-      message.warning('请先选择一个模块后再新建功能。')
+      message.warning('请先选择一个页面后再新建功能。')
       return
     }
     openCreateContainer('function', selectedNode.id)
@@ -215,7 +215,7 @@ export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceP
 
     // Block saving when a system container already exists.
     if (containerModalMode === 'create' && containerType === 'system' && project.system) {
-      message.warning('系统容器已存在，一个项目只能创建一个系统容器。')
+      message.warning('应用容器已存在，一个项目只能创建一个应用容器。')
       return
     }
 
@@ -392,7 +392,10 @@ export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceP
   }
 
   const selectedMeta = selectedNode ? getLatestEdit(selectedNode) : null
-  const promptText = selectedNode ? buildPrompt(selectedNode.urlId) : ''
+  // Use the current browser origin when building the prompt URL.
+  const promptText = selectedNode
+    ? buildPrompt(selectedNode.urlId, typeof window !== 'undefined' ? window.location.origin : undefined)
+    : ''
   // Applies read-only restrictions when the system container is in development mode.
   const systemReadOnly = project.system?.mode === 'dev'
   // Enables function creation only when a module is selected.
@@ -412,10 +415,10 @@ export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceP
               {!project.system ? (
                 <div className="empty-state">
                   <Typography.Text type="secondary">
-                    当前项目暂无系统容器，请先创建系统容器。
+                    当前项目暂无应用容器，请先创建应用容器。
                   </Typography.Text>
                   <Button onClick={handleCreateSystem} type="primary">
-                    创建系统容器
+                    创建应用容器
                   </Button>
                 </div>
               ) : (
@@ -424,7 +427,7 @@ export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceP
                   <div className="tree-scroll">
                     <div className="tree-actions">
                       <Button size="small" onClick={handleCreateModule} disabled={!canCreateModule}>
-                        新建模块
+                        新建页面
                       </Button>
                       <Button size="small" onClick={handleCreateFunctionForSelected} disabled={!canCreateFunction}>
                         新建功能

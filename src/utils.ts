@@ -29,9 +29,13 @@ export const touchMetadata = (meta: Metadata, user: string): Metadata => ({
 // Formats timestamps for display.
 export const formatDate = (value: string) => dayjs(value).format('YYYY-MM-DD HH:mm')
 
-// Builds the prompt text for a container node.
-export const buildPrompt = (urlId: string) =>
-  `读取这个 DIP 项目链接下的设计文档并开发应用：\n@https://dip.aishu.cn/project/${urlId}`
+// Builds the prompt text for a container node using the current server origin.
+export const buildPrompt = (urlId: string, origin?: string) => {
+  // Prefer the provided origin, otherwise fall back to the current browser origin.
+  const base =
+    origin ?? (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173')
+  return `读取这个 DIP 项目链接下的设计文档并开发应用：\n@${base}/project/${urlId}`
+}
 
 // Finds a node by id and returns it.
 export const findNodeById = (root: ContainerNode | undefined, id: string): ContainerNode | null => {
