@@ -230,10 +230,13 @@ const App = () => {
               <div className="workspace-actions">
                 <Button onClick={() => setViewMode('list')}>返回项目列表</Button>
                 <Button onClick={handleEditActiveProject}>编辑项目</Button>
-                <Button onClick={() => setDictionaryOpen(true)}>项目词典</Button>
               </div>
             </div>
-            <ProjectWorkspace project={activeProject} onProjectChange={handleProjectChange} />
+            <ProjectWorkspace
+              project={activeProject}
+              onProjectChange={handleProjectChange}
+              onOpenDictionary={() => setDictionaryOpen(true)}
+            />
           </div>
         )}
       </Content>

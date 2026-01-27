@@ -197,6 +197,13 @@ body {
   margin-bottom: 4px !important;
 }
 
+.panel-card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .tree-wrapper {
   display: flex;
   flex-direction: column;

@@ -16,7 +16,7 @@ import {
   Typography,
   message,
 } from 'antd'
-import { CodeOutlined } from '@ant-design/icons'
+import { BookOutlined, CodeOutlined } from '@ant-design/icons'
 import { useMemo, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import type { ContainerNode, ContainerType, Project } from '../types'
@@ -38,6 +38,7 @@ import {
 interface ProjectWorkspaceProps {
   project: Project
   onProjectChange: (project: Project) => void
+  onOpenDictionary: () => void
 }
 
 interface ContainerFormValues {
@@ -56,7 +57,7 @@ const containerLabels: Record<ContainerType, string> = {
 }
 
 // Renders the main project workspace with architecture and dictionary views.
-export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceProps) => {
+export const ProjectWorkspace = ({ project, onProjectChange, onOpenDictionary }: ProjectWorkspaceProps) => {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [containerModalOpen, setContainerModalOpen] = useState(false)
   const [containerModalMode, setContainerModalMode] = useState<'create' | 'edit'>('create')
@@ -410,7 +411,23 @@ export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceP
     <div className="project-workspace">
       <div className="workspace-layout">
         <aside className="workspace-sider">
-          <Card className="panel-card" title="项目架构">
+          <Card
+            className="panel-card"
+            title={
+              <div className="panel-card-title">
+                <span>项目架构</span>
+                <Tooltip title="项目词典">
+                  <Button
+                    aria-label="打开项目词典"
+                    icon={<BookOutlined />}
+                    onClick={onOpenDictionary}
+                    size="small"
+                    type="text"
+                  />
+                </Tooltip>
+              </div>
+            }
+          >
             <Space direction="vertical" className="panel-stack" size="middle">
               {!project.system ? (
                 <div className="empty-state">
