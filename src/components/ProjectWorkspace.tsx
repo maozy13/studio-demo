@@ -215,7 +215,7 @@ export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceP
 
     // Block saving when a system container already exists.
     if (containerModalMode === 'create' && containerType === 'system' && project.system) {
-      message.warning('应用容器已存在，一个项目只能创建一个应用容器。')
+      message.warning('应用已存在，一个项目只能创建一个应用。')
       return
     }
 
@@ -266,7 +266,7 @@ export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceP
   const handleDeleteContainer = (node: ContainerNode) => {
     // Prevent deletion when the node still has children.
     if (node.children.length > 0) {
-      message.warning('请先删除或移动子节点后再删除该容器。')
+      message.warning('请先删除或移动子节点后再删除该节点。')
       return
     }
     Modal.confirm({
@@ -415,10 +415,10 @@ export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceP
               {!project.system ? (
                 <div className="empty-state">
                   <Typography.Text type="secondary">
-                    当前项目暂无应用容器，请先创建应用容器。
+                    当前项目暂无应用，请先创建应用。
                   </Typography.Text>
                   <Button onClick={handleCreateSystem} type="primary">
-                    创建应用容器
+                    创建应用
                   </Button>
                 </div>
               ) : (
@@ -455,7 +455,7 @@ export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceP
                   <Card className="panel-card">
                     {!selectedNode ? (
                       <div className="empty-state">
-                        <Typography.Text type="secondary">请选择一个容器节点查看详情。</Typography.Text>
+                        <Typography.Text type="secondary">请选择一个节点查看详情。</Typography.Text>
                       </div>
                     ) : (
                       <Space direction="vertical" size="middle" className="panel-stack">
@@ -539,7 +539,7 @@ export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceP
         </div>
       </div>
       <Modal
-        title={containerModalMode === 'create' ? `新建${containerLabels[containerType]}` : '编辑容器'}
+        title={containerModalMode === 'create' ? `新建${containerLabels[containerType]}` : '编辑'}
         open={containerModalOpen}
         onCancel={() => setContainerModalOpen(false)}
         onOk={handleSaveContainer}
@@ -559,7 +559,7 @@ export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceP
         </Form>
       </Modal>
       <Modal
-        title="移动容器"
+        title="移动"
         open={moveModalOpen}
         onCancel={() => setMoveModalOpen(false)}
         onOk={handleMoveContainer}
@@ -567,9 +567,9 @@ export const ProjectWorkspace = ({ project, onProjectChange }: ProjectWorkspaceP
       >
         <Form form={moveForm} layout="vertical">
           <Form.Item
-            label="选择新的上级容器"
+            label="选择新的上级"
             name="parentId"
-            rules={[{ required: true, message: '请选择目标容器' }]}
+            rules={[{ required: true, message: '请选择目标' }]}
           >
             <Select options={moveParentOptions} placeholder="请选择" />
           </Form.Item>
