@@ -1,11 +1,7 @@
  开发 DIP 项目管理 DEMO
 
 ## 要求
-仔细阅读以下两个文档：
-* 系统元数据：@design/DIP Studio.pdf
-* 项目管理：@design/项目管理.pdf
-
-- DIP 项目管理 DEMO 本身遵循这两个文档的项目架构描述
+仔细阅读设计文档 @design/studio-demo.pdf
 - 界面风格参考 Notion，保持简约并使用留白
 
 ## 技术要求
