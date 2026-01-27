@@ -10,6 +10,9 @@
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
+  "bin": {
+    "demo": "./bin/start.js"
+  },
   "dependencies": {
     "antd": "^6.2.1",
     "dayjs": "^1.11.13",
