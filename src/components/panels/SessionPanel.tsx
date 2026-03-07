@@ -16,6 +16,8 @@ import { IMToolIcon, formatRelativeTime } from '../shared';
 interface SessionPanelProps {
   /** IM 集成配置列表 */
   integrations: IMIntegration[];
+  /** 选中的会话 ID（来自树节点点击） */
+  selectedSessionId?: string;
   /** 更新集成配置回调 */
   onUpdate: (integrations: IMIntegration[]) => void;
 }
@@ -32,15 +34,16 @@ const ALL_IM_TOOLS: IMTool[] = ['feishu', 'dingtalk', 'wecom'];
 
 /**
  * 会话 Session 列表项
+ * selected 为 true 时高亮显示，对应从树节点直接跳转到该会话
  */
-const SessionItem: React.FC<{ session: ConversationSession }> = ({ session }) => (
-  <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group">
-    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0 text-gray-500">
+const SessionItem: React.FC<{ session: ConversationSession; selected?: boolean }> = ({ session, selected }) => (
+  <div className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors group ${selected ? 'bg-indigo-50 border border-indigo-200' : 'hover:bg-gray-50'}`}>
+    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${selected ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-500'}`}>
       {session.isGroup ? <TeamOutlined /> : <UserOutlined />}
     </div>
     <div className="flex-1 min-w-0">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-gray-800 truncate">{session.name}</span>
+        <span className={`text-sm font-medium truncate ${selected ? 'text-indigo-700' : 'text-gray-800'}`}>{session.name}</span>
         <span className="text-xs text-gray-400 shrink-0 ml-2">
           {formatRelativeTime(session.lastActiveAt)}
         </span>
@@ -58,9 +61,10 @@ const SessionItem: React.FC<{ session: ConversationSession }> = ({ session }) =>
 const IMCard: React.FC<{
   imTool: IMTool;
   integration?: IMIntegration;
+  selectedSessionId?: string;
   onConnect: (tool: IMTool) => void;
   onDisconnect: (tool: IMTool) => void;
-}> = ({ imTool, integration, onConnect, onDisconnect }) => {
+}> = ({ imTool, integration, selectedSessionId, onConnect, onDisconnect }) => {
   const config = IM_CONFIGS[imTool];
   const configured = integration?.configured ?? false;
   const sessions = integration?.sessions ?? [];
@@ -115,7 +119,11 @@ const IMCard: React.FC<{
           ) : (
             <div className="px-2 py-2 space-y-0.5">
               {sessions.map((session) => (
-                <SessionItem key={session.id} session={session} />
+                <SessionItem
+                  key={session.id}
+                  session={session}
+                  selected={session.id === selectedSessionId}
+                />
               ))}
             </div>
           )}
@@ -128,7 +136,7 @@ const IMCard: React.FC<{
 /**
  * 会话面板主组件
  */
-const SessionPanel: React.FC<SessionPanelProps> = ({ integrations, onUpdate }) => {
+const SessionPanel: React.FC<SessionPanelProps> = ({ integrations, selectedSessionId, onUpdate }) => {
   const [connectingTool, setConnectingTool] = useState<IMTool | null>(null);
 
   /** 获取某 IM 工具的集成配置 */
@@ -195,6 +203,7 @@ const SessionPanel: React.FC<SessionPanelProps> = ({ integrations, onUpdate }) =
             key={tool}
             imTool={tool}
             integration={getIntegration(tool)}
+            selectedSessionId={selectedSessionId}
             onConnect={handleConnect}
             onDisconnect={handleDisconnect}
           />

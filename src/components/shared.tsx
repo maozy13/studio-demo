@@ -1,6 +1,6 @@
 /**
  * 共享 UI 组件
- * 包含：IM 工具图标、迷你折线图、时间格式化工具
+ * 包含：IM 工具图标、迷你折线图、用户头像组、时间格式化工具
  */
 
 import React from 'react';
@@ -35,6 +35,58 @@ export const IMToolIcon: React.FC<{
         className="select-none"
       />
     </Tooltip>
+  );
+};
+
+/**
+ * 用户头像组组件（仅管理员可见）
+ * 展示与数字员工协作的用户头像，超过 maxDisplay 个时显示数量气泡
+ */
+export const UserAvatarGroup: React.FC<{
+  /** 用户列表 */
+  users: { id: string; name: string; avatar?: string }[];
+  /** 最多展示的头像数量，超出部分显示数字 */
+  maxDisplay?: number;
+}> = ({ users, maxDisplay = 3 }) => {
+  if (!users || users.length === 0) return null;
+
+  const displayUsers = users.slice(0, maxDisplay);
+  const extraCount = users.length - maxDisplay;
+
+  /** 根据用户名生成一个稳定的背景色 */
+  const getColor = (name: string) => {
+    const colors = [
+      'bg-indigo-200 text-indigo-700',
+      'bg-purple-200 text-purple-700',
+      'bg-pink-200 text-pink-700',
+      'bg-blue-200 text-blue-700',
+      'bg-teal-200 text-teal-700',
+    ];
+    const index = name.charCodeAt(0) % colors.length;
+    return colors[index];
+  };
+
+  return (
+    <div className="flex items-center">
+      {displayUsers.map((user, i) => (
+        <Tooltip key={user.id} title={user.name}>
+          <div
+            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium border-2 border-white ${getColor(user.name)} ${i > 0 ? '-ml-2' : ''}`}
+            style={{ zIndex: displayUsers.length - i }}
+          >
+            {user.name.charAt(0)}
+          </div>
+        </Tooltip>
+      ))}
+      {/* 超出部分显示数量 */}
+      {extraCount > 0 && (
+        <Tooltip title={`还有 ${extraCount} 位使用者`}>
+          <div className="w-6 h-6 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center text-xs border-2 border-white -ml-2">
+            +{extraCount}
+          </div>
+        </Tooltip>
+      )}
+    </div>
   );
 };
 

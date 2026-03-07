@@ -20,6 +20,12 @@ export const mockEmployees: DigitalEmployee[] = [
     integrations: ['feishu', 'wecom'],
     planCount: 5,
     taskStats: [85, 100, 75, 100, 80, 100, 90],
+    users: [
+      { id: 'u-001', name: '张伟' },
+      { id: 'u-002', name: '李娜' },
+      { id: 'u-003', name: '王芳' },
+      { id: 'u-004', name: '赵磊' },
+    ],
   },
   {
     id: 'emp-002',
@@ -32,6 +38,10 @@ export const mockEmployees: DigitalEmployee[] = [
     integrations: ['dingtalk'],
     planCount: 12,
     taskStats: [92, 88, 95, 85, 90, 93, 97],
+    users: [
+      { id: 'u-002', name: '李娜' },
+      { id: 'u-005', name: '陈静' },
+    ],
   },
   {
     id: 'emp-003',
@@ -44,6 +54,13 @@ export const mockEmployees: DigitalEmployee[] = [
     integrations: ['feishu', 'dingtalk', 'wecom'],
     planCount: 3,
     taskStats: [60, 50, 80, 70, 65, 100, 75],
+    users: [
+      { id: 'u-003', name: '王芳' },
+      { id: 'u-004', name: '赵磊' },
+      { id: 'u-006', name: '刘明' },
+      { id: 'u-007', name: '孙丽' },
+      { id: 'u-008', name: '周强' },
+    ],
   },
   {
     id: 'emp-004',
@@ -56,6 +73,9 @@ export const mockEmployees: DigitalEmployee[] = [
     integrations: ['feishu'],
     planCount: 8,
     taskStats: [78, 82, 80, 88, 85, 91, 89],
+    users: [
+      { id: 'u-005', name: '陈静' },
+    ],
   },
 ];
 

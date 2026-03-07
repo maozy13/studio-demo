@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons';
 import type { DigitalEmployee } from '../types';
 import { mockEmployees } from '../data';
-import { IMToolIcon, SparkLine, formatRelativeTime } from './shared';
+import { IMToolIcon, SparkLine, UserAvatarGroup, formatRelativeTime } from './shared';
 
 interface EmployeeListProps {
   /** 点击卡片进入详情回调 */
@@ -200,6 +200,14 @@ const EmployeeCard: React.FC<{
         </div>
       </div>
 
+      {/* 使用者头像组（管理员可见） */}
+      {employee.users && employee.users.length > 0 && (
+        <div className="mt-3 flex items-center gap-2">
+          <UserAvatarGroup users={employee.users} maxDisplay={3} />
+          <span className="text-xs text-gray-400">{employee.users.length} 位使用者</span>
+        </div>
+      )}
+
       {/* 最近7天任务成功率折线图 */}
       <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
         <span className="text-xs text-gray-400">近7天任务成功率</span>
@@ -228,7 +236,7 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ onEnterDetail }) => {
   const [editingEmployee, setEditingEmployee] = useState<DigitalEmployee | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<DigitalEmployee | null>(null);
 
-  /** 新建数字员工 */
+  /** 新建数字员工，创建成功后自动跳转到详情页 */
   const handleCreate = (values: { name: string; description: string }) => {
     const now = new Date().toISOString();
     const newEmployee: DigitalEmployee = {
@@ -246,6 +254,8 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ onEnterDetail }) => {
     setEmployees((prev) => [newEmployee, ...prev]);
     setFormOpen(false);
     message.success('数字员工创建成功');
+    // 创建成功后直接进入数字员工详情页
+    onEnterDetail(newEmployee.id);
   };
 
   /** 编辑数字员工 */

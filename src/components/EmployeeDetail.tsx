@@ -22,13 +22,14 @@ import {
   ArrowLeftOutlined, SettingOutlined, DatabaseOutlined,
   ThunderboltOutlined, CalendarOutlined, MessageOutlined,
 } from '@ant-design/icons';
-import type { DigitalEmployeeDetail, TreeNode } from '../types';
+import type { DigitalEmployeeDetail, TreeNode, TaskInstance } from '../types';
 import { mockEmployeeDetails } from '../data';
 import { formatRelativeTime } from './shared';
 import SettingPanel from './panels/SettingPanel';
 import KnowledgePanel from './panels/KnowledgePanel';
 import SkillPanel from './panels/SkillPanel';
 import PlanPanel from './panels/PlanPanel';
+import { TaskDetailPanel } from './panels/PlanPanel';
 import SessionPanel from './panels/SessionPanel';
 
 interface EmployeeDetailProps {
@@ -65,19 +66,15 @@ function buildTreeData(detail: DigitalEmployeeDetail): TreeNode[] {
     })),
   }));
 
-  // 会话子节点
-  const sessionChildren: TreeNode[] = detail.imIntegrations.map((im) => ({
-    key: `im-${im.imTool}`,
-    title: im.imTool,
-    type: 'imItem' as const,
-    dataId: im.imTool,
-    children: im.sessions.map((sess) => ({
+  // 会话子节点：所有 IM 工具下的 session 直接平铺挂在"会话"节点下
+  const sessionChildren: TreeNode[] = detail.imIntegrations.flatMap((im) =>
+    im.sessions.map((sess) => ({
       key: `session-${sess.id}`,
       title: sess.name,
       type: 'sessionItem' as const,
       dataId: sess.id,
-    })),
-  }));
+    }))
+  );
 
   return [
     {
@@ -151,6 +148,9 @@ const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ employeeId, onBack }) =
   /** 当前选中的树节点 key */
   const [selectedKey, setSelectedKey] = useState<string>('setting');
 
+  /** 当前展开的任务详情（计划面板通过回调传入，渲染在最右侧第三列） */
+  const [activeTask, setActiveTask] = useState<TaskInstance | null>(null);
+
   /** 树展开的节点 keys */
   const [expandedKeys, setExpandedKeys] = useState<string[]>(['skill', 'plan', 'session']);
 
@@ -165,9 +165,12 @@ const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ employeeId, onBack }) =
       children: n.children ? toAntTreeData(n.children) : undefined,
     }));
 
-  /** 处理树节点选中 */
+  /** 处理树节点选中：切换节点时清除任务详情 */
   const handleSelect = (keys: React.Key[]) => {
-    if (keys.length > 0) setSelectedKey(String(keys[0]));
+    if (keys.length > 0) {
+      setSelectedKey(String(keys[0]));
+      setActiveTask(null);
+    }
   };
 
   /** 根据选中 key 决定渲染哪个面板 */
@@ -218,14 +221,19 @@ const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ employeeId, onBack }) =
           onUpdate={(plans) =>
             setDetail((prev) => ({ ...prev, plans, planCount: plans.length }))
           }
+          onOpenTask={(task) => setActiveTask(task)}
         />
       );
     }
 
-    if (selectedKey === 'session' || selectedKey.startsWith('im-') || selectedKey.startsWith('session-')) {
+    if (selectedKey === 'session' || selectedKey.startsWith('session-')) {
+      const sessionId = selectedKey.startsWith('session-')
+        ? selectedKey.replace('session-', '')
+        : undefined;
       return (
         <SessionPanel
           integrations={detail.imIntegrations}
+          selectedSessionId={sessionId}
           onUpdate={(integrations) => setDetail((prev) => ({ ...prev, imIntegrations: integrations }))}
         />
       );
@@ -279,12 +287,22 @@ const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ employeeId, onBack }) =
         </div>
       </div>
 
-      {/* 右侧内容面板 */}
-      <div className="flex-1 overflow-auto">
+      {/* 中间内容面板 */}
+      <div className="flex-1 overflow-auto min-w-0">
         <div className="max-w-3xl mx-auto px-10 py-10">
           {renderPanel()}
         </div>
       </div>
+
+      {/* 右侧任务详情面板：1/3 宽度，推动整体布局 */}
+      {activeTask && (
+        <div className="w-1/3 shrink-0 border-l border-gray-100 overflow-hidden">
+          <TaskDetailPanel
+            task={activeTask}
+            onClose={() => setActiveTask(null)}
+          />
+        </div>
+      )}
     </div>
   );
 };

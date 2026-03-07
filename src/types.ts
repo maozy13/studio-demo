@@ -60,6 +60,11 @@ export interface DigitalEmployee {
   planCount: number;
   /** 最近7天任务成功率（0-100，用于折线图） */
   taskStats: number[];
+  /**
+   * 使用者列表（按"用户ID + 数字员工ID"去重计数）
+   * 仅对管理员展示，以头像形式展示，超过3个在末尾显示数量
+   */
+  users?: { id: string; name: string; avatar?: string }[];
 }
 
 /**
@@ -81,6 +86,10 @@ export interface Skill {
   employeeId: string;
   /** 创建时间 */
   createdAt: string;
+  /** 版本号，遵循语义版本规则，格式为 v0.0.1 */
+  version?: string;
+  /** 发布描述，不超过400字 */
+  publishDescription?: string;
 }
 
 /**
